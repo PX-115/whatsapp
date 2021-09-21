@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1000878272114",
+    "project_id": "whatsapp-projeto-1f5d5",
+    "storage_bucket": "whatsapp-projeto-1f5d5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000878272114:android:b35a8fd7c298af7cfd5ceb",
+        "android_client_info": {
+          "package_name": "com.cursoflutter.zap.px.whatsapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1000878272114-f1q65k9fh5p8cqlbvh1l9c559f7b1360.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiE1sc2kiwsNTBckzw4MxvAy5urAHmqS0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1000878272114-f1q65k9fh5p8cqlbvh1l9c559f7b1360.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
