@@ -15,8 +15,15 @@ void main() async {
       "nome" : "SampleText"
     }); */
 
-  runApp(const MaterialApp(
+  final ThemeData theme = ThemeData();
+  runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: Login(),
+    theme: theme.copyWith(
+      colorScheme: theme.colorScheme.copyWith(
+        primary: Color(0xff075E54),
+        secondary: Color(0xff25D366)
+      ),
+    ),
   ));
 }
