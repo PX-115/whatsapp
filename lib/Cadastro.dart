@@ -1,37 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:whatsapp/Cadastro.dart';
 
-class Login extends StatefulWidget {
-  const Login({ Key? key }) : super(key: key);
+class Cadastro extends StatefulWidget {
+  const Cadastro({ Key? key }) : super(key: key);
 
   @override
-  _LoginState createState() => _LoginState();
+  _CadastroState createState() => _CadastroState();
 }
 
-class _LoginState extends State<Login> {
-
-  Route _createRoute() {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => const Cadastro(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0);
-        const end = Offset.zero;
-        const curve = Curves.ease;
-
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-    );
-  }
-
-
+class _CadastroState extends State<Cadastro> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Cadastro"),
+      ),
+
       body: Container(
         decoration: BoxDecoration(color: Color(0xff075E54)),
         padding: EdgeInsets.all(16),
@@ -43,9 +26,26 @@ class _LoginState extends State<Login> {
                 Padding(
                   padding: EdgeInsets.only(bottom: 32),
                   child: Image.asset(
-                    "assets/images/logo.png",
+                    "assets/images/usuario.png",
                     width: 200,
                     height: 150,
+                  ),
+                ),
+
+                Padding(
+                  padding: EdgeInsets.only(bottom: 8),
+                  child: TextField(
+                    keyboardType: TextInputType.emailAddress,
+                    style: TextStyle(fontSize: 20),
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      hintText: "Nome",
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(32)
+                      )
+                    ),
                   ),
                 ),
 
@@ -84,7 +84,7 @@ class _LoginState extends State<Login> {
                   padding: EdgeInsets.only(top: 16, bottom: 10),
                   child: ElevatedButton(
                     child: Text(
-                      "Entrar",
+                      "Cadastrar",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 20
@@ -102,23 +102,6 @@ class _LoginState extends State<Login> {
                     },
                   ),
                 ),
-
-                Center(
-                  child:GestureDetector(
-                    child: Text(
-                      "Não possui uma conta? Cadastre-se!",
-                      style: TextStyle(
-                        color: Colors.white
-                      ),
-                    ),
-                    onTap: (){
-                      Navigator.push(
-                        context,
-                        _createRoute()
-                      );
-                    },
-                  )
-                )
               ],
             ),
           ),
