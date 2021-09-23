@@ -8,6 +8,47 @@ class Cadastro extends StatefulWidget {
 }
 
 class _CadastroState extends State<Cadastro> {
+
+  TextEditingController _controllerNome = TextEditingController();
+  TextEditingController _controllerEmail = TextEditingController();
+  TextEditingController _controllerSenha = TextEditingController();
+
+  String _mensagemErro = "";
+
+  _validarCampos(){
+    String nome = _controllerNome.text;
+    String email = _controllerEmail.text;
+    String senha = _controllerSenha.text;
+
+    if(nome.isNotEmpty ){
+
+      //
+
+      if(email.isNotEmpty && email.contains("@")){
+
+        //
+
+        if(senha.isNotEmpty){
+
+          //
+
+        } else {
+          setState(() {
+            _mensagemErro = "Senha inválida!";
+          });
+        }
+      } else {
+        setState(() {
+          _mensagemErro = "Formato de e-mail inválido!";
+        });
+      }
+    } else {
+      setState(() {
+        _mensagemErro = "Informe um nome!";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,6 +76,7 @@ class _CadastroState extends State<Cadastro> {
                 Padding(
                   padding: EdgeInsets.only(bottom: 8),
                   child: TextField(
+                    controller: _controllerNome,
                     keyboardType: TextInputType.emailAddress,
                     style: TextStyle(fontSize: 20),
                     decoration: InputDecoration(
@@ -52,6 +94,7 @@ class _CadastroState extends State<Cadastro> {
                 Padding(
                   padding: EdgeInsets.only(bottom: 8),
                   child: TextField(
+                    controller: _controllerEmail,
                     keyboardType: TextInputType.emailAddress,
                     style: TextStyle(fontSize: 20),
                     decoration: InputDecoration(
@@ -67,7 +110,9 @@ class _CadastroState extends State<Cadastro> {
                 ),
 
                 TextField(
+                  controller: _controllerSenha,
                   keyboardType: TextInputType.text,
+                  obscureText: true,
                   style: TextStyle(fontSize: 20),
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
@@ -98,10 +143,20 @@ class _CadastroState extends State<Cadastro> {
                       primary: Colors.green
                     ),
                     onPressed: (){
-
+                      _validarCampos();
                     },
                   ),
                 ),
+
+                Center(
+                  child: Text(
+                    _mensagemErro,
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 20
+                    ),
+                  )
+                )
               ],
             ),
           ),
