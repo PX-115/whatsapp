@@ -10,7 +10,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
 
-  Route _createRoute() {
+  Route _rotaCadastro() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => const Cadastro(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -114,7 +114,7 @@ class _LoginState extends State<Login> {
                     onTap: (){
                       Navigator.push(
                         context,
-                        _createRoute()
+                        _rotaCadastro()
                       );
                     },
                   )
