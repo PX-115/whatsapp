@@ -91,7 +91,7 @@ class _LoginState extends State<Login> {
       email: usuario.email,
       password: usuario.senha
     ).then((firebaseUser){
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           _rotaHome()
         );
@@ -105,7 +105,7 @@ class _LoginState extends State<Login> {
     // auth.signOut();
     User? usuarioLogado = await auth.currentUser;
     if(usuarioLogado != null){
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         _rotaHome()
       );

@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:whatsapp/Home.dart';
 import 'package:whatsapp/model/Usuario.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class Cadastro extends StatefulWidget {
   const Cadastro({Key? key}) : super(key: key);
@@ -74,14 +76,23 @@ class _CadastroState extends State<Cadastro> {
   _cadastrarUsuario(Usuario usuario) {
     FirebaseAuth auth = FirebaseAuth.instance;
 
-    auth
-        .createUserWithEmailAndPassword(
-            email: usuario.email, password: usuario.senha)
-        .then((firebaseUser) {
-        Navigator.push(
-          context,
-          _rotaHome()
-        );
+    auth.createUserWithEmailAndPassword(
+      email: usuario.email, 
+      password: usuario.senha)
+    .then((firebaseUser) {
+
+      FirebaseFirestore db = FirebaseFirestore.instance;
+
+      db.collection("usuarios")
+      .doc( firebaseUser.user!.uid )
+      .set(
+        usuario.toMap()
+      );
+
+      Navigator.pushReplacement(
+        context,
+        _rotaHome()
+      );
     }).catchError((error) {
       setState(() {
         _mensagemErro =
