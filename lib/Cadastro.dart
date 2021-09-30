@@ -78,12 +78,10 @@ class _CadastroState extends State<Cadastro> {
         .createUserWithEmailAndPassword(
             email: usuario.email, password: usuario.senha)
         .then((firebaseUser) {
-      setState(() {
         Navigator.push(
           context,
           _rotaHome()
         );
-      });
     }).catchError((error) {
       setState(() {
         _mensagemErro =
