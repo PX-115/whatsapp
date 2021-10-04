@@ -3,7 +3,7 @@ class Conversa {
   String _nome = "";
   String _mensagem = "";
   String _caminhoImagem = "";
-  
+
   Conversa(this._nome, this._mensagem, this._caminhoImagem);
 
   String get nome => _nome;

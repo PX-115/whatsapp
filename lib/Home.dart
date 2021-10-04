@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:whatsapp/Login.dart';
 import 'package:whatsapp/tabs/AbaContatos.dart';
 import 'package:whatsapp/tabs/AbaConversas.dart';
 
@@ -10,8 +12,52 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+  Route _rotaLogin() {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => const Login(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 0.1);
+        const end = Offset.zero;
+        const curve = Curves.ease;
+
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
 
   late TabController _tabController;
+
+  List<String> itensMenu = [
+    "Configurações",
+    "Finalizar sessão"
+  ];
+
+  _escolhaMenuItem(String itemSelecionado){
+    switch (itemSelecionado) {
+      case "Configurações":
+        
+        break;
+      case "Finalizar sessão":
+        _finalizarSessao();
+        break;
+    }
+  }
+
+  _finalizarSessao() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    await auth.signOut();
+
+    Navigator.push(
+      context, 
+      _rotaLogin()
+    );
+  }
 
   @override
   void initState() {
@@ -48,6 +94,19 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             )
           ],
         ),
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            onSelected: _escolhaMenuItem,
+            itemBuilder: (context){
+              return itensMenu.map((String item){
+                return PopupMenuItem<String>(
+                  value: item,
+                  child: Text(item)
+                );
+              }).toList();
+            }
+          ),
+        ],
       ),
 
       body: TabBarView(
