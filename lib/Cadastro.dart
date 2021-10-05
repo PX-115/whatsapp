@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:whatsapp/Home.dart';
+import 'package:whatsapp/RouteGenerator.dart';
 import 'package:whatsapp/model/Usuario.dart';
 
 class Cadastro extends StatefulWidget {
@@ -12,25 +12,6 @@ class Cadastro extends StatefulWidget {
 }
 
 class _CadastroState extends State<Cadastro> {
-  Route _rotaHome() {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => const Home(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0.0, 1.0);
-        const end = Offset.zero;
-        const curve = Curves.ease;
-
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-    );
-  }
-
   TextEditingController _controllerNome = TextEditingController();
   TextEditingController _controllerEmail = TextEditingController();
   TextEditingController _controllerSenha = TextEditingController();
@@ -88,10 +69,7 @@ class _CadastroState extends State<Cadastro> {
         usuario.toMap()
       );
 
-      Navigator.pushReplacement(
-        context,
-        _rotaHome()
-      );
+      Navigator.pushNamedAndRemoveUntil(context, RouteGenerator.ROTA_HOME, (_) => false);
     }).catchError((error) {
       setState(() {
         _mensagemErro =

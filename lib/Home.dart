@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:whatsapp/Login.dart';
+import 'package:whatsapp/RouteGenerator.dart';
 import 'package:whatsapp/tabs/AbaContatos.dart';
 import 'package:whatsapp/tabs/AbaConversas.dart';
 
@@ -12,25 +12,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-  Route _rotaLogin() {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => const Login(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0.0, 0.1);
-        const end = Offset.zero;
-        const curve = Curves.ease;
-
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-    );
-  }
-
   late TabController _tabController;
 
   List<String> itensMenu = [
@@ -53,10 +34,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     FirebaseAuth auth = FirebaseAuth.instance;
     await auth.signOut();
 
-    Navigator.push(
-      context, 
-      _rotaLogin()
-    );
+    Navigator.pushReplacementNamed(context, RouteGenerator.ROTA_LOGIN);
   }
 
   @override
