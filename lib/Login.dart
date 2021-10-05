@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp/Cadastro.dart';
 import 'package:whatsapp/Home.dart';
+import 'package:whatsapp/RouteGenerator.dart';
 import 'package:whatsapp/model/Usuario.dart';
 
 class Login extends StatefulWidget {
@@ -105,10 +106,7 @@ class _LoginState extends State<Login> {
     // auth.signOut();
     User? usuarioLogado = await auth.currentUser;
     if(usuarioLogado != null){
-      Navigator.pushReplacement(
-        context,
-        _rotaHome()
-      );
+      Navigator.pushReplacementNamed(context, RouteGenerator.ROTA_HOME);
     }
   }
 
