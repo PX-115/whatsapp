@@ -15,14 +15,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   List<String> itensMenu = [
-    "Configurações",
+    "Perfil",
     "Finalizar sessão"
   ];
 
   _escolhaMenuItem(String itemSelecionado){
     switch (itemSelecionado) {
-      case "Configurações":
-        
+      case "Perfil":
+        Navigator.pushReplacementNamed(context, RouteGenerator.ROTA_PERFIL);
         break;
       case "Finalizar sessão":
         _finalizarSessao();
