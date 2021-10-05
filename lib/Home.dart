@@ -22,7 +22,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   _escolhaMenuItem(String itemSelecionado){
     switch (itemSelecionado) {
       case "Perfil":
-        Navigator.pushReplacementNamed(context, RouteGenerator.ROTA_PERFIL);
+        Navigator.pushNamed(context, RouteGenerator.ROTA_PERFIL);
         break;
       case "Finalizar sessão":
         _finalizarSessao();
