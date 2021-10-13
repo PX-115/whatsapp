@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -21,19 +21,19 @@ class _PerfilState extends State<Perfil> {
   bool _subindoImagem = false;
 
   Future? _recuperarImagem( String _origemImagem ) async {
-    late File imagemSelecionada;
+    late XFile? imagemSelecionada;
 
     switch (_origemImagem){
       case "camera" :
-        imagemSelecionada = (await ImagePicker().pickImage(source: ImageSource.camera)) as File;
+        imagemSelecionada = await ImagePicker().pickImage(source: ImageSource.camera);
         break;
       case "galeria" :
-        imagemSelecionada = (await ImagePicker().pickImage(source: ImageSource.gallery)) as File;
+        imagemSelecionada = await ImagePicker().pickImage(source: ImageSource.gallery);
         break;
     }
 
     setState(() {
-      imagem = imagemSelecionada;
+      imagem = File(imagemSelecionada!.path);
       _subindoImagem = true;
       _uploadImagem();
     });
@@ -43,7 +43,7 @@ class _PerfilState extends State<Perfil> {
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference pastaRaiz = storage.ref();
     Reference arquivo = pastaRaiz
-      .child("perfil/")
+      .child("perfil")
       .child("perfil_" + _idUsuarioLogado + ".jpg");
 
     UploadTask task = arquivo.putFile(imagem);
@@ -65,10 +65,23 @@ class _PerfilState extends State<Perfil> {
 
   Future _recuperarUrlImagem(TaskSnapshot snapshot) async {
     String url = await snapshot.ref.getDownloadURL();
+    _atualizarUrlImagemFirestore(url);
 
     setState(() {
       _urlRecuperada = url;
     });
+  }
+
+  _atualizarUrlImagemFirestore(String url){
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+    Map<String, dynamic> atualizarDados = {
+      "urlImagem" : url
+    };
+
+    db.collection("usuarios")
+      .doc(_idUsuarioLogado)
+      .update(atualizarDados);
   }
 
   _recuperarDadosUsuario() async {
@@ -103,7 +116,7 @@ class _PerfilState extends State<Perfil> {
                 CircleAvatar(
                   radius: 100,
                   backgroundColor: Colors.grey,
-                  backgroundImage: NetworkImage(_urlRecuperada)
+                  backgroundImage: _urlRecuperada.isNotEmpty ? NetworkImage(_urlRecuperada) : null
                 ),
 
                 Row(
