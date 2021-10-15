@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -84,11 +85,38 @@ class _PerfilState extends State<Perfil> {
       .update(atualizarDados);
   }
 
+  _atualizarNomeFirestore(){
+    String nome = _controllerNome.text;
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+    Map<String, dynamic> atualizarDados = {
+      "nome" : nome
+    };
+
+    db.collection("usuarios")
+      .doc(_idUsuarioLogado)
+      .update(atualizarDados);
+  }
+
   _recuperarDadosUsuario() async {
     FirebaseAuth auth = FirebaseAuth.instance;
 
-    User? usuarioLogado = await  auth.currentUser;
+    User? usuarioLogado = await auth.currentUser;
     _idUsuarioLogado = usuarioLogado!.uid;
+
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    DocumentSnapshot snapshot = await db.collection("usuarios")
+      .doc(_idUsuarioLogado)
+      .get();
+
+    Map<String, dynamic> dados = snapshot.data() as Map<String, dynamic>;
+    _controllerNome.text = dados["nome"];
+
+    if(dados["urlImagem"] != null){
+      setState(() {
+        _urlRecuperada = dados["urlImagem"];
+      });
+    }        
   }
 
   @override
@@ -110,9 +138,12 @@ class _PerfilState extends State<Perfil> {
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                _subindoImagem
-                  ? CircularProgressIndicator()
-                  : Container(),
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: _subindoImagem
+                    ? CircularProgressIndicator()
+                    : Container(),
+                ),
                 CircleAvatar(
                   radius: 100,
                   backgroundColor: Colors.grey,
@@ -169,7 +200,7 @@ class _PerfilState extends State<Perfil> {
                             borderRadius: BorderRadius.circular(32)),
                         primary: Colors.green),
                     onPressed: () {
-                      
+                      _atualizarNomeFirestore();
                     },
                   ),
                 ),
