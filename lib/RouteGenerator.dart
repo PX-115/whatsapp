@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:whatsapp/Cadastro.dart';
 import 'package:whatsapp/Home.dart';
 import 'package:whatsapp/Login.dart';
+import 'package:whatsapp/Mensagens.dart';
 import 'package:whatsapp/Perfil.dart';
+import 'package:whatsapp/model/Usuario.dart';
 
 class RouteGenerator {
 
@@ -11,8 +13,11 @@ class RouteGenerator {
   static const String ROTA_CADASTRO = "/cadastro";
   static const String ROTA_HOME = "/home";
   static const String ROTA_PERFIL = "/perfil";
+  static const String ROTA_MENSAGENS = "/mensagens";
 
   static Route<dynamic>? generateRoute(RouteSettings settings) {
+    final args = settings.arguments;
+
     switch (settings.name) {
       case ROTA_INICIAL:
         return PageRouteBuilder(
@@ -89,6 +94,23 @@ class RouteGenerator {
               const Perfil(),
           transitionsBuilder: (_, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.ease;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+        );
+      case ROTA_MENSAGENS:
+        return PageRouteBuilder(
+          pageBuilder: (_, animation, secondaryAnimation) => Mensagens(args as Usuario),
+          transitionsBuilder: (_, animation, secondaryAnimation, child) {
+            const begin = Offset(0.0, 1.0);
             const end = Offset.zero;
             const curve = Curves.ease;
 
