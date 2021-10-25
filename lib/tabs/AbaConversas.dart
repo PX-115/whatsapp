@@ -11,7 +11,7 @@ class AbaConversas extends StatefulWidget {
 class _AbaConversasState extends State<AbaConversas> {
 
   List<Conversa> listaConversa = [
-    Conversa(
+    /* Conversa(
       "Kanye East", 
       "Hey yo, check my new album: Duda", 
       "https://firebasestorage.googleapis.com/v0/b/whatsapp-projeto-1f5d5.appspot.com/o/perfil%2Fperfil1.jpg?alt=media&token=725ba1a7-5b99-4b12-90bc-835a5ec25503"
@@ -35,7 +35,7 @@ class _AbaConversasState extends State<AbaConversas> {
       "Ratuê (he's brazilian = monkee)", 
       "Hey dababy, how to stop being white?", 
       "https://firebasestorage.googleapis.com/v0/b/whatsapp-projeto-1f5d5.appspot.com/o/perfil%2Fperfil5.jpg?alt=media&token=3e65a9ae-8c0c-4d63-afdf-358aaf03636d"
-    ),
+    ), */
   ];
 
   @override

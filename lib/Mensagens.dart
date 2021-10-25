@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 import 'package:whatsapp/model/Usuario.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -15,7 +18,11 @@ class _MensagensState extends State<Mensagens> {
   TextEditingController _controllerMensagem = TextEditingController();
 
   _enviarMensagem() async {
+    String _mensagem = _controllerMensagem.text;
 
+    if(_mensagem.isNotEmpty){
+      
+    }
   }
 
   Future? _enviarImagem( String _origemImagem ) async {
@@ -36,6 +43,13 @@ class _MensagensState extends State<Mensagens> {
       _uploadImagem();
     }); */
   }
+
+  List<String> listaMensagem = [
+    "Que sensacional",
+    "O sorriso dessa princessa",
+    "É de impressionar",
+    "Quando arrasta ela pra treta"
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +97,42 @@ class _MensagensState extends State<Mensagens> {
       ),
     );
 
+    var listView = Expanded(
+      child: ListView.builder(
+        itemCount: listaMensagem.length,
+        itemBuilder: (context, index){
+          double larguraContainer = MediaQuery.of(context).size.width * 0.8;
+
+          Alignment alinhamento = Alignment.centerRight;
+          Color cor = Color(0xffd2ffa5);
+
+          if(index % 2 == 0){//Par
+            alinhamento = Alignment.centerLeft;
+            cor = Colors.white;
+          }
+
+          return Align(
+            alignment: alinhamento,
+            child: Padding(
+              padding: EdgeInsets.all(6),
+              child: Container(
+                width: larguraContainer,
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: cor,
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                ),
+                child: Text(
+                  listaMensagem[index],
+                  style: TextStyle(fontSize: 18),
+                  ),
+              ),
+            )
+          );
+        }
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -112,7 +162,7 @@ class _MensagensState extends State<Mensagens> {
             padding: EdgeInsets.all(16),
             child: Column(
               children: <Widget>[
-                Text("Sample Text"),
+                listView,
                 caixaMensagem
               ],
             ),

@@ -30,6 +30,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     }
   }
 
+  Future _verificarUsuarioLogado() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    // auth.signOut();
+    User? usuarioLogado = await auth.currentUser;
+    if(usuarioLogado == null){
+      Navigator.pushReplacementNamed(context, RouteGenerator.ROTA_HOME);
+    }
+  }
+
   _finalizarSessao() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     await auth.signOut();
