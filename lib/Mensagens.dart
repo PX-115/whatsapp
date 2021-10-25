@@ -5,6 +5,9 @@ import 'package:flutter/rendering.dart';
 import 'package:whatsapp/model/Usuario.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'model/Mensagem.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 // ignore: must_be_immutable
 class Mensagens extends StatefulWidget {
   Usuario? contato;
@@ -18,10 +21,14 @@ class _MensagensState extends State<Mensagens> {
   TextEditingController _controllerMensagem = TextEditingController();
 
   _enviarMensagem() async {
-    String _mensagem = _controllerMensagem.text;
+    String textoMensagem = _controllerMensagem.text;
 
-    if(_mensagem.isNotEmpty){
-      
+    if(textoMensagem.isNotEmpty){
+      Mensagem mensagem = Mensagem();
+      mensagem.idUsuario = "";
+      mensagem.mensagem = textoMensagem;
+      mensagem.urlImagem = "";
+      mensagem.tipo = "texto";
     }
   }
 
