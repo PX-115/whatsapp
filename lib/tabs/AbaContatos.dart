@@ -27,6 +27,7 @@ class _AbaContatosState extends State<AbaContatos> {
       if(dados["email"] == _emailUsuarioLogado) continue;
 
       Usuario usuario = Usuario();
+      usuario.idUsuario = item.id;
       usuario.nome = dados["nome"];
       usuario.email = dados["email"];
       usuario.urlImagem = dados["urlImagem"];

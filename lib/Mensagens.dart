@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -19,17 +20,30 @@ class Mensagens extends StatefulWidget {
 
 class _MensagensState extends State<Mensagens> {
   TextEditingController _controllerMensagem = TextEditingController();
+  String? _idUsuarioLogado;
+  String? _idUsuarioDestinatario;
 
   _enviarMensagem() async {
-    String textoMensagem = _controllerMensagem.text;
+    String? textoMensagem = _controllerMensagem.text;
 
     if(textoMensagem.isNotEmpty){
       Mensagem mensagem = Mensagem();
-      mensagem.idUsuario = "";
+      mensagem.idUsuario = _idUsuarioLogado;
       mensagem.mensagem = textoMensagem;
       mensagem.urlImagem = "";
       mensagem.tipo = "texto";
+
+      _salvarMensagem(_idUsuarioLogado, _idUsuarioDestinatario, mensagem);
     }
+    
+  }
+
+  _salvarMensagem(String? idRemetente, String? idDestinatario, Mensagem msg) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    await db.collection("mensagens")
+    .doc(idRemetente)
+    .collection(idDestinatario!)
+    .add(msg.toMap());
   }
 
   Future? _enviarImagem( String _origemImagem ) async {
@@ -57,6 +71,21 @@ class _MensagensState extends State<Mensagens> {
     "É de impressionar",
     "Quando arrasta ela pra treta"
   ];
+
+  _recuperarDadosUsuario() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    User? usuarioLogado = await auth.currentUser;
+    _idUsuarioLogado = usuarioLogado!.uid;
+
+    _idUsuarioDestinatario = widget.contato!.idUsuario;
+  }
+
+  @override
+  void initState() {
+    _recuperarDadosUsuario();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,9 +119,7 @@ class _MensagensState extends State<Mensagens> {
             ),
           ),
           FloatingActionButton(
-            onPressed: (){
-              _enviarMensagem;
-            },
+            onPressed: _enviarMensagem,
             backgroundColor: Color(0xff075E54),
             child: Icon(
               Icons.send, 

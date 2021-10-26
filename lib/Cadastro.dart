@@ -16,12 +16,12 @@ class _CadastroState extends State<Cadastro> {
   TextEditingController _controllerEmail = TextEditingController();
   TextEditingController _controllerSenha = TextEditingController();
 
-  String _mensagemErro = "";
+  String? _mensagemErro;
 
   _validarCampos() {
-    String nome = _controllerNome.text;
-    String email = _controllerEmail.text;
-    String senha = _controllerSenha.text;
+    String? nome = _controllerNome.text;
+    String? email = _controllerEmail.text;
+    String? senha = _controllerSenha.text;
 
     if (nome.isNotEmpty) {
       //
@@ -166,7 +166,7 @@ class _CadastroState extends State<Cadastro> {
                 ),
                 Center(
                     child: Text(
-                  _mensagemErro,
+                  _mensagemErro!,
                   style: TextStyle(color: Colors.red, fontSize: 20),
                 ))
               ],

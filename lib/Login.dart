@@ -14,7 +14,7 @@ class _LoginState extends State<Login> {
   TextEditingController _controllerEmail = TextEditingController();
   TextEditingController _controllerSenha = TextEditingController();
 
-  String _mensagemErro = "";
+  String? _mensagemErro;
 
   _validarCampos() {
     String email = _controllerEmail.text;
@@ -154,7 +154,7 @@ class _LoginState extends State<Login> {
                     padding: EdgeInsets.only(top: 16),
                     child: Center(
                         child: Text(
-                      _mensagemErro,
+                      _mensagemErro!,
                       style: TextStyle(color: Colors.red, fontSize: 20),
                     )))
               ],
