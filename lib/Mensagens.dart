@@ -11,7 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 // ignore: must_be_immutable
 class Mensagens extends StatefulWidget {
-  Usuario? contato;
+  Usuario contato;
   Mensagens(this.contato);
 
   @override
@@ -20,11 +20,12 @@ class Mensagens extends StatefulWidget {
 
 class _MensagensState extends State<Mensagens> {
   TextEditingController _controllerMensagem = TextEditingController();
-  String? _idUsuarioLogado;
-  String? _idUsuarioDestinatario;
+  String _idUsuarioLogado;
+  String _idUsuarioDestinatario;
+  FirebaseFirestore db = FirebaseFirestore.instance;
 
   _enviarMensagem() async {
-    String? textoMensagem = _controllerMensagem.text;
+    String textoMensagem = _controllerMensagem.text;
 
     if(textoMensagem.isNotEmpty){
       Mensagem mensagem = Mensagem();
@@ -38,15 +39,14 @@ class _MensagensState extends State<Mensagens> {
     
   }
 
-  _salvarMensagem(String? idRemetente, String? idDestinatario, Mensagem msg) async {
-    FirebaseFirestore db = FirebaseFirestore.instance;
+  _salvarMensagem(String idRemetente, String idDestinatario, Mensagem msg) async {
     await db.collection("mensagens")
     .doc(idRemetente)
-    .collection(idDestinatario!)
+    .collection(idDestinatario)
     .add(msg.toMap());
   }
 
-  Future? _enviarImagem( String _origemImagem ) async {
+  Future _enviarImagem( String _origemImagem ) async {
     /* late XFile? imagemSelecionada;
 
     switch (_origemImagem){
@@ -75,10 +75,10 @@ class _MensagensState extends State<Mensagens> {
   _recuperarDadosUsuario() async {
     FirebaseAuth auth = FirebaseAuth.instance;
 
-    User? usuarioLogado = await auth.currentUser;
-    _idUsuarioLogado = usuarioLogado!.uid;
+    User usuarioLogado = await auth.currentUser;
+    _idUsuarioLogado = usuarioLogado.uid;
 
-    _idUsuarioDestinatario = widget.contato!.idUsuario;
+    _idUsuarioDestinatario = widget.contato.idUsuario;
   }
 
   @override
@@ -131,6 +131,79 @@ class _MensagensState extends State<Mensagens> {
       ),
     );
 
+    var stream = StreamBuilder(
+      stream: db.collection("mensagens")
+              .doc(_idUsuarioLogado)
+              .collection(_idUsuarioDestinatario).snapshots(),
+      builder: (context, snapshot){
+        switch(snapshot.connectionState){
+          case ConnectionState.none:
+          case ConnectionState.waiting:
+            return Center(
+              child: Container(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  children: <Widget>[
+                    Text("Carregando mensagens..."),
+                    CircularProgressIndicator()
+                  ],
+                ),
+              )
+            );
+          case ConnectionState.active:
+          case ConnectionState.done:
+            QuerySnapshot querySnapshot = snapshot.data as QuerySnapshot;
+
+            if(snapshot.hasError){
+              return Expanded(
+                child: Text("Erro ao carregar mensagens")
+              );
+            } else {
+              return Expanded(
+                  child: ListView.builder(
+                      itemCount: querySnapshot.docs.length,
+                      itemBuilder: (context, index) {
+
+                        List<DocumentSnapshot> mensagens = querySnapshot.docs.toList();
+                        DocumentSnapshot item = mensagens[index];
+
+                        double larguraContainer =
+                            MediaQuery.of(context).size.width * 0.8;
+
+                        Alignment alinhamento = Alignment.centerRight;
+                        Color cor = Color(0xffd2ffa5);
+
+                        if (index % 2 == 0) {
+                          //Par
+                          alinhamento = Alignment.centerLeft;
+                          cor = Colors.white;
+                        }
+
+                        return Align(
+                            alignment: alinhamento,
+                            child: Padding(
+                              padding: EdgeInsets.all(6),
+                              child: Container(
+                                width: larguraContainer,
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: cor,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(8)),
+                                ),
+                                child: Text(
+                                  item["mensagem"],
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              ),
+                            ));
+                      }),
+                );
+            }
+        }
+      }
+    );
+
     var listView = Expanded(
       child: ListView.builder(
         itemCount: listaMensagem.length,
@@ -173,11 +246,11 @@ class _MensagensState extends State<Mensagens> {
           children: <Widget>[
             CircleAvatar(
               backgroundColor: Colors.grey,
-              backgroundImage: widget.contato!.urlImagem.isNotEmpty ? NetworkImage(widget.contato!.urlImagem) : null
+              backgroundImage: widget.contato.urlImagem.isNotEmpty ? NetworkImage(widget.contato.urlImagem) : null
             ),
             Padding(
               padding: EdgeInsets.only(left: 10),
-              child: Text(widget.contato!.nome)
+              child: Text(widget.contato.nome)
             )
           ],
         ),
@@ -196,7 +269,7 @@ class _MensagensState extends State<Mensagens> {
             padding: EdgeInsets.all(16),
             child: Column(
               children: <Widget>[
-                listView,
+                stream,
                 caixaMensagem
               ],
             ),

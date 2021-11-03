@@ -5,7 +5,7 @@ import 'package:whatsapp/RouteGenerator.dart';
 import 'package:whatsapp/model/Usuario.dart';
 
 class Cadastro extends StatefulWidget {
-  const Cadastro({Key? key}) : super(key: key);
+  const Cadastro({Key key}) : super(key: key);
 
   @override
   _CadastroState createState() => _CadastroState();
@@ -16,12 +16,12 @@ class _CadastroState extends State<Cadastro> {
   TextEditingController _controllerEmail = TextEditingController();
   TextEditingController _controllerSenha = TextEditingController();
 
-  String? _mensagemErro;
+  String _mensagemErro;
 
   _validarCampos() {
-    String? nome = _controllerNome.text;
-    String? email = _controllerEmail.text;
-    String? senha = _controllerSenha.text;
+    String nome = _controllerNome.text;
+    String email = _controllerEmail.text;
+    String senha = _controllerSenha.text;
 
     if (nome.isNotEmpty) {
       //
@@ -64,7 +64,7 @@ class _CadastroState extends State<Cadastro> {
       FirebaseFirestore db = FirebaseFirestore.instance;
 
       db.collection("usuarios")
-      .doc( firebaseUser.user!.uid )
+      .doc( firebaseUser.user.uid )
       .set(
         usuario.toMap()
       );
@@ -166,7 +166,7 @@ class _CadastroState extends State<Cadastro> {
                 ),
                 Center(
                     child: Text(
-                  _mensagemErro!,
+                  _mensagemErro,
                   style: TextStyle(color: Colors.red, fontSize: 20),
                 ))
               ],

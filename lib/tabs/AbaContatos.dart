@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:whatsapp/RouteGenerator.dart';
-import 'package:whatsapp/model/Conversa.dart';
 import 'package:whatsapp/model/Usuario.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AbaContatos extends StatefulWidget {
-  const AbaContatos({Key? key}) : super(key: key);
+  const AbaContatos({Key key}) : super(key: key);
 
   @override
   _AbaContatosState createState() => _AbaContatosState();
 }
 
 class _AbaContatosState extends State<AbaContatos> {
-  String? _idUsuarioLogado;
-  String? _emailUsuarioLogado;
+  String _emailUsuarioLogado;
 
   Future<List<Usuario>> _recuperarContatos() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -41,9 +39,8 @@ class _AbaContatosState extends State<AbaContatos> {
   _recuperarDadosUsuario() async {
     FirebaseAuth auth = FirebaseAuth.instance;
 
-    User? usuarioLogado = await auth.currentUser;
-    _emailUsuarioLogado = usuarioLogado!.email;
-    _idUsuarioLogado = usuarioLogado.uid;
+    User usuarioLogado = await auth.currentUser;
+    _emailUsuarioLogado = usuarioLogado.email;
   }
 
   @override
@@ -74,10 +71,10 @@ class _AbaContatosState extends State<AbaContatos> {
           case ConnectionState.active:
           case ConnectionState.done:
             return ListView.builder(
-                itemCount: snapshot.data!.length,
+                itemCount: snapshot.data.length,
                 itemBuilder: (_, index) {
-                  List<Usuario>? listaItens = snapshot.data;
-                  Usuario usuario = listaItens![index];
+                  List<Usuario> listaItens = snapshot.data;
+                  Usuario usuario = listaItens[index];
 
                   return ListTile(
                     onTap: (){

@@ -1,12 +1,12 @@
 class Mensagem{
-  String? _idUsuario;
-  String? _mensagem;
-  String? _urlImagem;
-  String? _tipo;
+  String _idUsuario;
+  String _mensagem;
+  String _urlImagem;
+  String _tipo;
 
   Mensagem();
 
-  String? get tipo => _tipo;
+  String get tipo => _tipo;
 
   Map<String, dynamic> toMap(){
     Map<String, dynamic> map = {
@@ -19,25 +19,25 @@ class Mensagem{
     return map;
   } 
 
-  set tipo(String? value) {
+  set tipo(String value) {
     _tipo = value;
   }
 
-  String? get urlImagem => _urlImagem;
+  String get urlImagem => _urlImagem;
 
-  set urlImagem(String? value) {
+  set urlImagem(String value) {
     _urlImagem = value;
   }
 
-  String? get mensagem => _mensagem;
+  String get mensagem => _mensagem;
 
-  set mensagem(String? value) {
+  set mensagem(String value) {
     _mensagem = value;
   }
 
-  String? get idUsuario => _idUsuario;
+  String get idUsuario => _idUsuario;
 
-  set idUsuario(String? value) {
+  set idUsuario(String value) {
     _idUsuario = value;
   }
 

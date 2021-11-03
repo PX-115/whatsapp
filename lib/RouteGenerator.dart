@@ -15,7 +15,7 @@ class RouteGenerator {
   static const String ROTA_PERFIL = "/perfil";
   static const String ROTA_MENSAGENS = "/mensagens";
 
-  static Route<dynamic>? generateRoute(RouteSettings settings) {
+  static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
 
     switch (settings.name) {

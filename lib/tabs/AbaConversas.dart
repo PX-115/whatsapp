@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:whatsapp/model/Conversa.dart';
 
 class AbaConversas extends StatefulWidget {
-  const AbaConversas({ Key? key }) : super(key: key);
+  const AbaConversas({ Key key }) : super(key: key);
 
   @override
   _AbaConversasState createState() => _AbaConversasState();

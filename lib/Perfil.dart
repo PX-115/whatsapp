@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class Perfil extends StatefulWidget {
-  const Perfil({ Key? key }) : super(key: key);
+  const Perfil({ Key key }) : super(key: key);
 
   @override
   _PerfilState createState() => _PerfilState();
@@ -16,13 +16,13 @@ class Perfil extends StatefulWidget {
 
 class _PerfilState extends State<Perfil> {
   TextEditingController _controllerNome = TextEditingController();
-  String _idUsuarioLogado = "";
-  String _urlRecuperada = "";
-  late File imagem;
+  String _idUsuarioLogado;
+  String _urlRecuperada;
+  File imagem;
   bool _subindoImagem = false;
 
-  Future? _recuperarImagem( String _origemImagem ) async {
-    late XFile? imagemSelecionada;
+  Future _recuperarImagem( String _origemImagem ) async {
+    XFile imagemSelecionada;
 
     switch (_origemImagem){
       case "camera" :
@@ -34,13 +34,13 @@ class _PerfilState extends State<Perfil> {
     }
 
     setState(() {
-      imagem = File(imagemSelecionada!.path);
+      imagem = File(imagemSelecionada.path);
       _subindoImagem = true;
       _uploadImagem();
     });
   }
 
-  Future? _uploadImagem(){
+  Future _uploadImagem(){
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference pastaRaiz = storage.ref();
     Reference arquivo = pastaRaiz
@@ -101,8 +101,8 @@ class _PerfilState extends State<Perfil> {
   _recuperarDadosUsuario() async {
     FirebaseAuth auth = FirebaseAuth.instance;
 
-    User? usuarioLogado = await auth.currentUser;
-    _idUsuarioLogado = usuarioLogado!.uid;
+    User usuarioLogado = await auth.currentUser;
+    _idUsuarioLogado = usuarioLogado.uid;
 
     FirebaseFirestore db = FirebaseFirestore.instance;
     DocumentSnapshot snapshot = await db.collection("usuarios")

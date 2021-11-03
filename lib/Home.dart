@@ -5,14 +5,14 @@ import 'package:whatsapp/tabs/AbaContatos.dart';
 import 'package:whatsapp/tabs/AbaConversas.dart';
 
 class Home extends StatefulWidget {
-  const Home({ Key? key }) : super(key: key);
+  const Home({ Key key }) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+  TabController _tabController;
 
   List<String> itensMenu = [
     "Perfil",
@@ -33,7 +33,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   Future _verificarUsuarioLogado() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     // auth.signOut();
-    User? usuarioLogado = await auth.currentUser;
+    User usuarioLogado = await auth.currentUser;
     if(usuarioLogado == null){
       Navigator.pushReplacementNamed(context, RouteGenerator.ROTA_HOME);
     }
