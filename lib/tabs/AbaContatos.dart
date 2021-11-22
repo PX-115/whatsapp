@@ -98,7 +98,10 @@ class _AbaContatosState extends State<AbaContatos> {
                   );
                 }
             );
-        }
+          default:
+            return Container(); // just to satisfy flutter analyzer
+          break;
+        } 
       },
     );
   }

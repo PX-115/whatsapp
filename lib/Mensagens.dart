@@ -1,13 +1,16 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
-import 'package:whatsapp/model/Usuario.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:whatsapp/model/Usuario.dart';
 
 import 'model/Mensagem.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 // ignore: must_be_immutable
 class Mensagens extends StatefulWidget {
@@ -22,21 +25,30 @@ class _MensagensState extends State<Mensagens> {
   TextEditingController _controllerMensagem = TextEditingController();
   String _idUsuarioLogado;
   String _idUsuarioDestinatario;
+  String urlRecuperada;
+  File imagemSelecionada;
+  bool subindoImagem = false;
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   _enviarMensagem() async {
     String textoMensagem = _controllerMensagem.text;
 
-    if(textoMensagem.isNotEmpty){
+    if(textoMensagem != null){
       Mensagem mensagem = Mensagem();
       mensagem.idUsuario = _idUsuarioLogado;
       mensagem.mensagem = textoMensagem;
       mensagem.urlImagem = "";
       mensagem.tipo = "texto";
 
+      // Salva a mensagem para o remetente
       _salvarMensagem(_idUsuarioLogado, _idUsuarioDestinatario, mensagem);
+
+      //Salva a mensagem para o destinatário
+      _salvarMensagem(_idUsuarioDestinatario, _idUsuarioLogado, mensagem);
     }
     
+    //Limpar o texto da caixa de mensagem
+    _controllerMensagem.text = "";
   }
 
   _salvarMensagem(String idRemetente, String idDestinatario, Mensagem msg) async {
@@ -46,31 +58,60 @@ class _MensagensState extends State<Mensagens> {
     .add(msg.toMap());
   }
 
-  Future _enviarImagem( String _origemImagem ) async {
-    /* late XFile? imagemSelecionada;
+  Future _enviarImagem() async {
 
-    switch (_origemImagem){
-      case "camera" :
-        imagemSelecionada = await ImagePicker().pickImage(source: ImageSource.camera);
-        break;
-      case "galeria" :
-        imagemSelecionada = await ImagePicker().pickImage(source: ImageSource.gallery);
-        break;
-    }
+    XFile imagemPickada = await ImagePicker().pickImage(source: ImageSource.gallery);
 
     setState(() {
-      imagem = File(imagemSelecionada!.path);
-      _subindoImagem = true;
-      _uploadImagem();
-    }); */
+      imagemSelecionada = File(imagemPickada.path);
+    });
+
+    // O método de upload da imagem agora é integrado ao método que envia a mensagem
+    subindoImagem = true;
+    String nomeImagem = DateTime.now().millisecondsSinceEpoch.toString();
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference pastaRaiz = storage.ref();
+    Reference arquivo = pastaRaiz
+      .child("mensagens")
+      .child(_idUsuarioLogado)
+      .child(nomeImagem + ".png");
+
+    UploadTask task = arquivo.putFile(imagemSelecionada);
+
+    task.snapshotEvents.listen((TaskSnapshot event) { 
+      if(event.state == TaskState.running){
+        setState(() {
+          subindoImagem = true;
+        });
+      }else if (event.state == TaskState.success){
+        setState(() {
+          subindoImagem = false;
+        });
+      }
+    });
+
+    task.whenComplete(() => _recuperarUrlImagem(task.snapshot));
   }
 
-  List<String> listaMensagem = [
-    "Que sensacional",
-    "O sorriso dessa princessa",
-    "É de impressionar",
-    "Quando arrasta ela pra treta"
-  ];
+  Future _recuperarUrlImagem(TaskSnapshot snapshot) async {
+    String url = await snapshot.ref.getDownloadURL();
+
+     Mensagem mensagem = Mensagem();
+      mensagem.idUsuario = _idUsuarioLogado;
+      mensagem.mensagem = "";
+      mensagem.urlImagem = url;
+      mensagem.tipo = "imagem";
+
+      // Salva a mensagem para o remetente
+      _salvarMensagem(_idUsuarioLogado, _idUsuarioDestinatario, mensagem);
+
+      //Salva a mensagem para o destinatário
+      _salvarMensagem(_idUsuarioDestinatario, _idUsuarioLogado, mensagem);
+
+    setState(() {
+      urlRecuperada = url;
+    });
+  }
 
   _recuperarDadosUsuario() async {
     FirebaseAuth auth = FirebaseAuth.instance;
@@ -95,7 +136,6 @@ class _MensagensState extends State<Mensagens> {
           Expanded(
             child: TextField(
               controller: _controllerMensagem,
-              keyboardType: TextInputType.emailAddress,
               style: TextStyle(fontSize: 16),
               decoration: InputDecoration(
                   contentPadding:
@@ -108,7 +148,7 @@ class _MensagensState extends State<Mensagens> {
                   ),
                   prefixIcon: IconButton(
                     onPressed: (){
-                      _enviarImagem("galeria");
+                      _enviarImagem();
                     }, 
                     icon: Icon(
                       Icons.camera_alt,
@@ -191,53 +231,21 @@ class _MensagensState extends State<Mensagens> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(8)),
                                 ),
-                                child: Text(
-                                  item["mensagem"],
-                                  style: TextStyle(fontSize: 18),
-                                ),
+                                child: 
+                                item["tipo"] == "texto"
+                                  ? Text(item["mensagem"], style: TextStyle(fontSize: 18))
+                                  : Image.network(item["urlImagem"])
                               ),
                             ));
                       }),
                 );
-            }
+            } 
+          break;
+          default:
+            return Container(); // just to satisfy flutter analyzer
+          break;
         }
       }
-    );
-
-    var listView = Expanded(
-      child: ListView.builder(
-        itemCount: listaMensagem.length,
-        itemBuilder: (context, index){
-          double larguraContainer = MediaQuery.of(context).size.width * 0.8;
-
-          Alignment alinhamento = Alignment.centerRight;
-          Color cor = Color(0xffd2ffa5);
-
-          if(index % 2 == 0){//Par
-            alinhamento = Alignment.centerLeft;
-            cor = Colors.white;
-          }
-
-          return Align(
-            alignment: alinhamento,
-            child: Padding(
-              padding: EdgeInsets.all(6),
-              child: Container(
-                width: larguraContainer,
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: cor,
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                ),
-                child: Text(
-                  listaMensagem[index],
-                  style: TextStyle(fontSize: 18),
-                  ),
-              ),
-            )
-          );
-        }
-      ),
     );
 
     return Scaffold(
