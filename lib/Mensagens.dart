@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:whatsapp/model/Conversa.dart';
 import 'package:whatsapp/model/Usuario.dart';
 
 import 'model/Mensagem.dart';
@@ -33,7 +34,7 @@ class _MensagensState extends State<Mensagens> {
   _enviarMensagem() async {
     String textoMensagem = _controllerMensagem.text;
 
-    if(textoMensagem != null){
+    if(textoMensagem.isNotEmpty){
       Mensagem mensagem = Mensagem();
       mensagem.idUsuario = _idUsuarioLogado;
       mensagem.mensagem = textoMensagem;
@@ -45,10 +46,31 @@ class _MensagensState extends State<Mensagens> {
 
       //Salva a mensagem para o destinatário
       _salvarMensagem(_idUsuarioDestinatario, _idUsuarioLogado, mensagem);
+
+      _salvarConversa( mensagem );
     }
-    
-    //Limpar o texto da caixa de mensagem
-    _controllerMensagem.text = "";
+  }
+
+  _salvarConversa(Mensagem mensagem){
+    //Salvar para o remetente
+    Conversa conversaRemetente = Conversa();
+    conversaRemetente.idRemetente = _idUsuarioLogado;
+    conversaRemetente.idDestinatario = _idUsuarioDestinatario;
+    conversaRemetente.mensagem = mensagem.toString();
+    conversaRemetente.nome = widget.contato.nome;
+    conversaRemetente.caminhoImagem = widget.contato.urlImagem;
+    conversaRemetente.tipoMensagem = mensagem.tipo;
+    conversaRemetente.salvar();
+
+    //Salvar para o destinatário
+    Conversa conversaDestinatario = Conversa();
+    conversaDestinatario.idRemetente = _idUsuarioDestinatario;
+    conversaDestinatario.idDestinatario = _idUsuarioLogado;
+    conversaDestinatario.mensagem = mensagem.toString();
+    conversaDestinatario.nome = widget.contato.nome;
+    conversaDestinatario.caminhoImagem = widget.contato.urlImagem;
+    conversaDestinatario.tipoMensagem = mensagem.tipo;
+    conversaDestinatario.salvar();
   }
 
   _salvarMensagem(String idRemetente, String idDestinatario, Mensagem msg) async {
@@ -56,6 +78,8 @@ class _MensagensState extends State<Mensagens> {
     .doc(idRemetente)
     .collection(idDestinatario)
     .add(msg.toMap());
+
+    _controllerMensagem.clear();
   }
 
   Future _enviarImagem() async {
@@ -146,15 +170,22 @@ class _MensagensState extends State<Mensagens> {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(32)
                   ),
-                  prefixIcon: IconButton(
-                    onPressed: (){
-                      _enviarImagem();
-                    }, 
-                    icon: Icon(
-                      Icons.camera_alt,
-                      color: Color(0xff075E54),
-                    ),
-                  )
+                  prefixIcon: 
+                  subindoImagem 
+                  ? SizedBox(
+                      child: CircularProgressIndicator(),
+                      height: 5.0,
+                      width: 5.0,
+                    )
+                  : IconButton(
+                      onPressed: (){
+                        _enviarImagem();
+                      }, 
+                      icon: Icon(
+                        Icons.camera_alt,
+                        color: Color(0xff075E54),
+                      ),
+                    )
               ),
             ),
           ),
@@ -213,8 +244,7 @@ class _MensagensState extends State<Mensagens> {
                         Alignment alinhamento = Alignment.centerRight;
                         Color cor = Color(0xffd2ffa5);
 
-                        if (index % 2 == 0) {
-                          //Par
+                        if (_idUsuarioLogado != item["idUsuario"]) {
                           alinhamento = Alignment.centerLeft;
                           cor = Colors.white;
                         }
