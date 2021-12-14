@@ -42,6 +42,7 @@ class _MensagensState extends State<Mensagens> {
       mensagem.idUsuario = _idUsuarioLogado;
       mensagem.mensagem = textoMensagem;
       mensagem.urlImagem = "";
+      mensagem.data = Timestamp.now().toString();
       mensagem.tipo = "texto";
 
       // Salva a mensagem para o remetente
@@ -127,7 +128,9 @@ class _MensagensState extends State<Mensagens> {
       mensagem.idUsuario = _idUsuarioLogado;
       mensagem.mensagem = "";
       mensagem.urlImagem = url;
+      mensagem.data = Timestamp.now().toString();
       mensagem.tipo = "imagem";
+      
 
       // Salva a mensagem para o remetente
       _salvarMensagem(_idUsuarioLogado, _idUsuarioDestinatario, mensagem);
@@ -153,7 +156,9 @@ class _MensagensState extends State<Mensagens> {
   Stream<QuerySnapshot>_adicionarListenerMensagem(){
     final stream = db.collection("mensagens")
       .doc(_idUsuarioLogado)
-      .collection(_idUsuarioDestinatario).snapshots();
+      .collection(_idUsuarioDestinatario)
+      .orderBy("data", descending: false)
+      .snapshots();
 
     stream.listen((dados) {
       _streamController.add(dados);
