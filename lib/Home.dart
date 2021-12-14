@@ -1,3 +1,6 @@
+// import 'dart:html';
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp/RouteGenerator.dart';
@@ -63,10 +66,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         title: Text("WhatsApp"),
+        elevation: Platform.isIOS ? 0 : 4,
         bottom: TabBar(
           controller: _tabController,
           indicatorWeight: 4,
-          indicatorColor: Colors.white,
+          indicatorColor: Platform.isIOS ? Colors.grey[400] : Colors.white,
           labelStyle: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold
