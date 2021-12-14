@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:whatsapp/RouteGenerator.dart';
 import 'package:whatsapp/model/Conversa.dart';
+import 'package:whatsapp/model/Usuario.dart';
 
 // ignore: must_be_immutable
 class AbaConversas extends StatefulWidget {
@@ -56,6 +58,12 @@ class _AbaConversasState extends State<AbaConversas> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _streamController.close();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     return StreamBuilder<QuerySnapshot>(
@@ -105,9 +113,22 @@ class _AbaConversasState extends State<AbaConversas> {
                   String nome      = item["nome"];
                   String mensagem  = item["mensagem"];
                   String tipo      = item["tipoMensagem"];
+                  String idDestinatario = item["idDestinatario"];
+
+                  Usuario usuario = Usuario();
+                  usuario.idUsuario = idDestinatario;
+                  usuario.nome = nome;
+                  usuario.urlImagem = urlImagem;
 
 
                   return ListTile(
+                    onTap: (){
+                      Navigator.pushNamed(
+                        context, 
+                        RouteGenerator.ROTA_MENSAGENS,
+                        arguments: usuario
+                      );
+                    },
                     contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 8),
                     leading: CircleAvatar(
                       backgroundColor: Colors.grey,
@@ -133,11 +154,11 @@ class _AbaConversasState extends State<AbaConversas> {
                   );
                 }
               );
-            }/* 
+            }
             break;
           default:
             return Container(); // just to satisfy flutter analyzer
-          break; */
+          break;
         }
       }
     );
