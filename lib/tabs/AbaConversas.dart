@@ -27,12 +27,12 @@ class _AbaConversasState extends State<AbaConversas> {
     super.initState();
     _recuperarDadosUsuario();
 
-    Conversa conversa = Conversa();
+    /* Conversa conversa = Conversa();
     conversa.nome = "Ana Clara";
     conversa.mensagem = "Olá tudo bem?";
     conversa.caminhoImagem = "https://firebasestorage.googleapis.com/v0/b/whatsapp-36cd8.appspot.com/o/perfil%2Fperfil1.jpg?alt=media&token=97a6dbed-2ede-4d14-909f-9fe95df60e30";
-
-    _listaConversas.add(conversa);
+ */
+    // _listaConversas.add(conversa);
   }
 
   Stream<QuerySnapshot> adicionarListenerConversa(){

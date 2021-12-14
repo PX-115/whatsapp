@@ -174,11 +174,11 @@ class _MensagensState extends State<Mensagens> {
     super.initState();
   }
 
-  /* @override
+  @override
   void dispose() {
     super.dispose();
     _streamController.close();
-  } */
+  }
 
   @override
   Widget build(BuildContext context) {
