@@ -44,8 +44,6 @@ class _AbaConversasState extends State<AbaConversas> {
     stream.listen((dados) {
       _streamController.add(dados);
     });
-
-    
   }
 
   _recuperarDadosUsuario() async {

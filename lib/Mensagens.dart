@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,6 +31,8 @@ class _MensagensState extends State<Mensagens> {
   File imagemSelecionada;
   bool subindoImagem = false;
   FirebaseFirestore db = FirebaseFirestore.instance;
+  final _streamController = StreamController<QuerySnapshot>.broadcast();
+  ScrollController _scrollController = ScrollController();
 
   _enviarMensagem() async {
     String textoMensagem = _controllerMensagem.text;
@@ -142,8 +145,22 @@ class _MensagensState extends State<Mensagens> {
 
     User usuarioLogado = await auth.currentUser;
     _idUsuarioLogado = usuarioLogado.uid;
-
     _idUsuarioDestinatario = widget.contato.idUsuario;
+
+    _adicionarListenerMensagem();
+  }
+
+  Stream<QuerySnapshot>_adicionarListenerMensagem(){
+    final stream = db.collection("mensagens")
+      .doc(_idUsuarioLogado)
+      .collection(_idUsuarioDestinatario).snapshots();
+
+    stream.listen((dados) {
+      _streamController.add(dados);
+      Timer(Duration(seconds: 1), () {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      });
+    });
   }
 
   @override
@@ -151,6 +168,12 @@ class _MensagensState extends State<Mensagens> {
     _recuperarDadosUsuario();
     super.initState();
   }
+
+  /* @override
+  void dispose() {
+    super.dispose();
+    _streamController.close();
+  } */
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +212,14 @@ class _MensagensState extends State<Mensagens> {
               ),
             ),
           ),
-          FloatingActionButton(
+          Platform.isIOS
+          ? CupertinoButton(
+            onPressed: _enviarImagem,
+            child: Text(
+              "Enviar"
+            )
+          )
+          : FloatingActionButton(
             onPressed: _enviarMensagem,
             backgroundColor: Color(0xff075E54),
             child: Icon(
@@ -197,15 +227,13 @@ class _MensagensState extends State<Mensagens> {
               color: Colors.white
             ),
             mini: true,
-          )
+          ) 
         ],
       ),
     );
 
     var stream = StreamBuilder(
-      stream: db.collection("mensagens")
-              .doc(_idUsuarioLogado)
-              .collection(_idUsuarioDestinatario).snapshots(),
+      stream: _streamController.stream,
       builder: (context, snapshot){
         switch(snapshot.connectionState){
           case ConnectionState.none:
@@ -232,6 +260,8 @@ class _MensagensState extends State<Mensagens> {
             } else {
               return Expanded(
                   child: ListView.builder(
+                      controller: _scrollController,
+
                       itemCount: querySnapshot.docs.length,
                       itemBuilder: (context, index) {
 
